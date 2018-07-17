@@ -1,0 +1,47 @@
+#include <string.h>
+#include  <direct.h>
+#include "gtest/gtest.h"
+#include "LifeGame.h"
+
+using namespace std;
+
+const string RELATIVE_INPUT_PATH = R"(\resource\input\)";
+const string RELATIVE_OUTPUT_PATH = R"(\resource\output\)";
+
+class LifeGameTest:public testing::Test
+{
+	virtual void SetUp()
+	{
+		char currentpath[MAX_PATH];
+		getcwd(currentpath, MAX_PATH);
+		inputpath = currentpath;
+		outputpath = currentpath;
+	}
+protected:
+	const char* getInputPath(string fileName)
+	{
+		return inputpath.append(RELATIVE_INPUT_PATH).append(fileName).c_str();
+	}
+
+	const char* getOutputPath(string fileName)
+	{
+		return outputpath.append(RELATIVE_OUTPUT_PATH).append(fileName).c_str();
+	}
+private:
+	string inputpath;
+	string outputpath;
+};
+
+TEST_F(LifeGameTest,life_change_complete_initdata3)
+{
+	LifeGame::getInstance().ROLE(Service).InitLifeCell(R"(./resource/input/initdata3.txt)", 3, 3);
+	LifeGame::getInstance().ROLE(CellTrans).oneRoundCellChange();
+    EXPECT_EQ("$ $$   $$", LifeGame::getInstance().ROLE(Service).LifeCellStateConvertToString(R"(./resource/output/Final3.txt)"));
+}
+
+TEST_F(LifeGameTest,life_change_complete_to_a_stable_state_initdata20)
+{
+	LifeGame::getInstance().ROLE(Service).InitLifeCell(R"(./resource/input/initdata20.txt)", 20, 20);
+	LifeGame::getInstance().ROLE(CellTrans).changeCompelete();
+    EXPECT_EQ("                                                                       $$     $$           $$     $$                                        $$                  $$                                                                                                                                                                          $$             $$   $$             $$                               ", LifeGame::getInstance().ROLE(Service).LifeCellStateConvertToString(R"(./resource/output/Final20.txt)"));
+}
